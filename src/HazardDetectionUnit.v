@@ -25,7 +25,18 @@ module HazardDetectionUnit (
         // If the instruction in EX/MEM is a load and the instruction in ID/EX
         // uses its destination register, the pipeline must stall one cycle.
 
-        // TODO: Implementar a lógica para detectar hazard causado por load aqui!!!
+        // Quais instruções leem rs1: LW, SW, BEQ, ALUop (ADDI)
+        // Quais instruções leem rs2: apenas SW e BEQ (ALUop usa imediato, não rs2)
+        if ((exmem_op == LW) && (exmem_rd != 5'd0)) begin
+            if ((idex_op == LW  || idex_op == SW || idex_op == BEQ || idex_op == ALUop)
+                && (exmem_rd == idex_rs1)) begin
+                stall = 1'b1;
+            end
+            if ((idex_op == SW || idex_op == BEQ)
+                && (exmem_rd == idex_rs2)) begin
+                stall = 1'b1;
+            end
+        end
 
     end
 
